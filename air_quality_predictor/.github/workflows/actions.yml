@@ -1,1 +1,6 @@
+name: run main.py
 
+on:
+  schedule:
+    - cron: '5 * * * *' # At minute 5 of every hour of every day
+     
