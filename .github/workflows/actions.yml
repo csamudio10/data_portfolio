@@ -10,7 +10,7 @@ jobs:
     defaults:
       run:
         shell: bash
-          working-directory: /air_quality_predictor
+        working-directory: air_quality_predictor
     steps:
 
       - name: checkout repo content
