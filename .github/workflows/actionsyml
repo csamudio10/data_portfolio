@@ -2,11 +2,15 @@ name: run main.py
 
 on:
   schedule:
-    - cron: '5 * * * *' # At minute 5 of every hour of every day
+    - cron: '15 * * * *' # At minute 5 of every hour of every day
      
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+          working-directory: /air_quality_predictor
     steps:
 
       - name: checkout repo content
