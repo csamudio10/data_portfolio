@@ -30,7 +30,7 @@ jobs:
         pip install -r requirements.txt  # if you have a requirements.txt file
 
     - name: Run script
-      run: python air_quality_index/main.py  # change to be the path to your script
+      run: python main.py  # change to be the path to your script
 
     - name: Add and commit
       uses: EndBug/add-and-commit@v9
