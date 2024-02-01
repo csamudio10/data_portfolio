@@ -1,43 +1,38 @@
-name: manual_run
+name: Run Script
 
-on: push
-     
+on:
+  # run every 6 hours
+  schedule:
+    - cron: "5 * * * *"
+  # run when manually triggered
+  workflow_dispatch:
+  # run when this file is changed
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/github-actions.yml"  # change to be the path to this file
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: air_quality_predictor
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ${GITHUB_WORKSPACE}/requirements.txt  # if you have a requirements.txt file
 
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9' # install the python version needed
-          
-      - name: install python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          
-      - name: execute py script # run main.py
-        env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-        run: python main.py
-          
-      - name: commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
-          
-      - name: push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main 
+    - name: Run script
+      run: python ${GITHUB_WORKSPACE}/portfolio/air_quality_index/main.py  # change to be the path to your script
+
+    - name: Add and commit
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: GitHub Actions
+        author_email: 41898282+github-actions[bot]@users.noreply.github.com
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: "chore: Update file"
+        add: "*.csv"
