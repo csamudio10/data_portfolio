@@ -30,6 +30,8 @@ jobs:
         pip install -r requirements.txt  # if you have a requirements.txt file
 
     - name: Run script
+      env:
+        API_TOKEN: ${{ secrets.API_TOKEN }}
       run: python main.py  # change to be the path to your script
 
     - name: Add and commit
