@@ -1,4 +1,4 @@
-name: Run Script
+name: get_aqi_data
 
 on:
   # run every 6 hours
