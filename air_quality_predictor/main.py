@@ -29,7 +29,7 @@ def main():
     pollutant_list.append("time")
     pollutant_value.append(response.json()['data']['time']['s'])
 
-    with open('/home/runner/work/portfolio/portfolio/air_quality_predictor/aqi_usaqien.csv','a') as fd:
+    with open('/home/runner/work/portfolio/air_quality_predictor/aqi_usaquen.csv','a') as fd:
         writer = csv.writer(fd)
         writer.writerow(p_value) 
 
