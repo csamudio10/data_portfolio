@@ -31,7 +31,7 @@ def main():
 
     with open('aqi_usaquen.csv','a') as fd:
         writer = csv.writer(fd)
-        writer.writerow(p_value) 
+        writer.writerow(pollutant_value) 
 
 
 if __name__ == "__main__":
