@@ -9,7 +9,7 @@ date_column = 'time'
 
 def load_data():
     data = pd.read_csv(data_url)
-    data['time'] = pd.datetime(data['time'])
+    data['time'] = pd.to_datetime(data['time'])
     return data
 
 data_load_state = st.text('Loading data...')
