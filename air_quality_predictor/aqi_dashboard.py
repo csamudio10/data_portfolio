@@ -8,7 +8,7 @@ data_url = 'https://github.com/csamudio10/portfolio/blob/main/air_quality_predic
 date_column = 'time'
 
 def load_data():
-    data = pd.read_csv(data_url, nrows=nrows)
+    data = pd.read_csv(data_url)
     return data
 
 data_load_state = st.text('Loading data...')
