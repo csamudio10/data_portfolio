@@ -7,11 +7,8 @@ st.title('Air Quality in Usaquen')
 data_url = 'https://github.com/csamudio10/portfolio/blob/main/air_quality_predictor/aqi_usaquen.csv'
 date_column = 'time'
 
-def load_data(nrows):
+def load_data():
     data = pd.read_csv(data_url, nrows=nrows)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data[date_column] = pd.to_datetime(data[DATE_COLUMN])
     return data
 
 data_load_state = st.text('Loading data...')
