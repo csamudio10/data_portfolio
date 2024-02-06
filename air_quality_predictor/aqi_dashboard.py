@@ -20,8 +20,7 @@ if st.checkbox('Show raw data'):
     st.subheader('Raw data')
     st.write(data)
 
-col1, col2, col3 = st.columns([1,3,1])
-
-with col2:
-    st.line_chart(data[['time','aqi']])
-
+st.subheader('AQI over time')
+st.line_chart(data = data,
+              x= 'time',
+              y='aqi')
