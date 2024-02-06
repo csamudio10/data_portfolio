@@ -4,7 +4,7 @@ import numpy as np
 
 st.title('Air Quality in Usaquen')
 
-data_url = 'https://github.com/csamudio10/portfolio/blob/main/air_quality_predictor/aqi_usaquen.csv'
+data_url = 'https://github.com/csamudio10/portfolio/blob/main/air_quality_predictor/aqi_usaquen.csv?raw=true'
 date_column = 'time'
 
 def load_data():
