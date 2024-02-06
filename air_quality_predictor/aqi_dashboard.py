@@ -12,7 +12,7 @@ def load_data():
     return data
 
 data_load_state = st.text('Loading data...')
-data = load_data(100)
+data = load_data()
 data_load_state.text("Done! (using st.cache_data)")
 
 if st.checkbox('Show raw data'):
