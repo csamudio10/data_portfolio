@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 import os
+import warnings
+from pandas.core.common import SettingWithCopyWarning
+
+
+# ignore the copy warnings
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
 def get_data(seasons: list, team: str):
     
@@ -79,3 +85,14 @@ def process_manager_history():
             manager_df['end_date'].iloc[i] = pd.to_datetime(manager_df['end_date'].iloc[i])
     
     return manager_df
+
+
+if __name__ == "__main__":
+    seasons = [i for i in range(1987,2025)]
+    raw_data = get_data(seasons,"manchester-united")
+    pep_df = get_data([2017,2018],'manchester-city')
+    pep_df['manager'] = 'Pep Guardiola'
+    klopp_df = get_data([2016,2017],'liverpool')
+    klopp_df['manager'] = 'Jurgen Klopp'
+    arteta_df = get_data([2020,2021],'arsenal')
+    arteta_df['manager'] = 'Mikel Arteta'
