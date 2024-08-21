@@ -26,7 +26,7 @@ jobs:
 
     - name: Run Jupyter Notebook
       run: |
-        jupyter nbconvert --to notebook --execute heart disease predictor/Heart disease prediction.ipynb --output executed_notebook.ipynb
+        jupyter nbconvert --to notebook --execute heart disease predictor/heart_disease_prediction.ipynb --output executed_notebook.ipynb
 
     - name: Create Issue Notification
       env:
