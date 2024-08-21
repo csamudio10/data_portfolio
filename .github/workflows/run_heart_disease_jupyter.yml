@@ -1,0 +1,43 @@
+name: Run Jupyter Notebook and Notify User
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-notebook:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install jupyter nbconvert
+
+    - name: Run Jupyter Notebook
+      run: |
+        jupyter nbconvert --to notebook --execute heart disease predictor/Heart disease prediction.ipynb --output executed_notebook.ipynb
+
+    - name: Create Issue Notification
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/${{ github.repository }}/issues \
+        -d '{"title":"Jupyter Notebook Execution Complete","body":"The notebook has been executed successfully and the output is attached.","labels":["notification"]}'
+
+    - name: Upload Executed Notebook
+      uses: actions/upload-artifact@v3
+      with:
+        name: executed-notebook
+        path: executed_notebook.ipynb
