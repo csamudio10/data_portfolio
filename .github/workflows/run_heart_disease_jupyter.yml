@@ -27,8 +27,7 @@ jobs:
 
     - name: Run Jupyter Notebook
       run: |
-        jupyter nbconvert --to notebook --execute heart_disease_predictor/heart_disease_prediction.ipynb --output executed_notebook.ipynb
-
+        jupyter nbconvert --to notebook --execute heart_disease_predictor/heart_disease_prediction.ipynb --output heart_disease_prediction.ipynb
     - name: Create Issue Notification
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
