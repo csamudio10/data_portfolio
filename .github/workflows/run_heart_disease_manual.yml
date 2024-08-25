@@ -2,6 +2,9 @@ name: Run Jupyter Notebook Manually
 
 on:
   workflow_dispatch:  # Allows manual triggering from the GitHub UI
+permissions:
+  id-token: write
+  pages: write
 
 jobs:
   run-notebook:
@@ -31,3 +34,5 @@ jobs:
       with:
         name: heart_disease_prediction.ipynb
         path: heart_disease_predictor/heart_disease_prediction.ipynb
+
+
