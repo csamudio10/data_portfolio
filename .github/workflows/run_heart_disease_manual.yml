@@ -29,5 +29,5 @@ jobs:
     - name: Upload Executed Notebook
       uses: actions/upload-artifact@v3
       with:
-        name: executed-notebook
-        path: executed_notebook.ipynb
+        name: heart_disease_prediction.ipynb
+        path: heart_disease_predictor/heart_disease_prediction.ipynb
