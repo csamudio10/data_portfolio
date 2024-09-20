@@ -56,4 +56,4 @@ This project looks to create a calculator that automatically adjusts the kVp (ki
     Accurately calibrated equipment reduces wear and tear on the X-ray tube and other components, preventing unnecessary stress on the system and prolonging the equipment’s life
 
 
-   [kvp-mA adjuster](https://github.com/csamudio10/kVp-mA-calculator/blob/v1/streamlit_app.py)
+   [kvp-mA adjuster](https://kvp-ma-calculator-4fabnunmbrasvv2on4p2eh.streamlit.app/)
