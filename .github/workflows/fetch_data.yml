@@ -1,0 +1,28 @@
+name: Fetch and Store Match Data
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: pip install -r premier_league_predictions/requirements.txt
+
+      - name: Run data collection script
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          NEON_DB_URL: ${{ secrets.NEON_DB_URL }}
+        run: python premier_league_predictions/fetch_data.py
