@@ -32,4 +32,4 @@ This project is aimed to see how Manchester United has performed under the new m
 
 This project looks to create a model that can predict if a compound is mutagenic (capable of causing permanent changes to an organism's DNA) based on its atomic and quantum properties. 
 
-[Mutagenic Predictor](/mutagenicity_predictor/Classification of Mutagenic Compounds.ipynb)
+[Mutagenic Predictor](/mutagenicity_predictor/Classification_of_Mutagenic_Compounds.ipynb)
