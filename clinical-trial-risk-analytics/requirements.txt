@@ -1,0 +1,12 @@
+pandas
+numpy
+requests
+scikit-learn
+xgboost
+lifelines
+matplotlib
+seaborn
+shap
+pydantic
+pyyaml
+tqdm
