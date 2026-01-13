@@ -341,6 +341,15 @@ class Region4(SteamRegion):
         
         return T_sat
 
+    def in_region(self):
+        valid = False
+        if 273.15 <= self.T <= 647.096:
+            valid = True
+            
+        if 611.213e-6 <= self.P < 22.064:
+            valid = True
+        
+        return valid
 
 
 
