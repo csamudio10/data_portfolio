@@ -1,3 +1,4 @@
 pandas
-streamlit
 matplotlib
+streamlit>=1.32
+altair>=5
