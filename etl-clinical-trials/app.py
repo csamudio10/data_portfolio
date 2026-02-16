@@ -38,6 +38,20 @@ if os.path.exists(DB_PATH):
 else:
     st.error(f"Database file NOT found at {DB_PATH}")
 
+
+# Temporary debug check
+try:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+    st.write(f"Tables found: {tables}")
+    conn.close()
+except Exception as e:
+    st.error(f"Direct SQLite call failed: {e}")
+
+
+
 @st.cache_resource
 def get_connection():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
