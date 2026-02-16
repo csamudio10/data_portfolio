@@ -24,6 +24,14 @@ if not DB_PATH.exists():
 # ======================================================
 # DATABASE CONNECTION
 # ======================================================
+import os
+if os.path.exists(DB_PATH):
+    size = os.path.getsize(DB_PATH)
+    st.write(f"Database found at {DB_PATH}, size: {size} bytes")
+    # If size is very small (like 130 bytes), it's a Git LFS pointer file!
+else:
+    st.error(f"Database file NOT found at {DB_PATH}")
+
 @st.cache_resource
 def get_connection():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
