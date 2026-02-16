@@ -11,6 +11,10 @@ st.set_page_config(
     layout="wide"
 )
 
+with open(DB_PATH, 'rb') as f:
+    header = f.read(16)
+    st.write(f"File Header: {header}")
+
 # ======================================================
 # PATH SETUP
 # ======================================================
