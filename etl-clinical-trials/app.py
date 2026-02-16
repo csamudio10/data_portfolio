@@ -11,10 +11,6 @@ st.set_page_config(
     layout="wide"
 )
 
-with open(DB_PATH, 'rb') as f:
-    header = f.read(16)
-    st.write(f"File Header: {header}")
-
 # ======================================================
 # PATH SETUP
 # ======================================================
@@ -24,6 +20,12 @@ DB_PATH = BASE_DIR / "data" / "clinical_trials.db"
 if not DB_PATH.exists():
     st.error("Database file not found. Please check path.")
     st.stop()
+
+
+with open(DB_PATH, 'rb') as f:
+    header = f.read(16)
+    st.write(f"File Header: {header}")
+
 
 # ======================================================
 # DATABASE CONNECTION
