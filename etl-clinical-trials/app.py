@@ -1,33 +1,62 @@
-import streamlit as st
 import sqlite3
-import pandas as pd
 from pathlib import Path
+import pandas as pd
+import streamlit as st
 
 # ======================================================
-# CONFIG
+# PAGE CONFIG
 # ======================================================
-st.set_page_config(page_title="Clinical AE Dashboard", layout="wide")
+st.set_page_config(
+    page_title="Clinical AE Dashboard",
+    layout="wide"
+)
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-DB_PATH = PROJECT_ROOT / "data" / "clinical_trials.db"
+# ======================================================
+# PATH SETUP
+# ======================================================
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "data" / "clinical_trials.db"
+
+if not DB_PATH.exists():
+    st.error("Database file not found. Please check path.")
+    st.stop()
 
 # ======================================================
 # DATABASE CONNECTION
 # ======================================================
+@st.cache_resource
+def get_connection():
+    return sqlite3.connect(DB_PATH, check_same_thread=False)
+
 @st.cache_data
 def run_query(query, params=None):
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql(query, conn, params=params)
-    conn.close()
-    return df
-
+    conn = get_connection()
+    return pd.read_sql(query, conn, params=params)
 
 # ======================================================
-# LOAD FILTER OPTIONS
+# LOAD FILTER DATA (CACHED)
 # ======================================================
-terms = run_query("SELECT DISTINCT ae_term FROM ae ORDER BY ae_term")
-organs = run_query("SELECT DISTINCT organ_system FROM ae ORDER BY organ_system")
-groups = run_query("SELECT DISTINCT group_id FROM ae ORDER BY group_id")
+@st.cache_data
+def load_terms():
+    return run_query(
+        "SELECT DISTINCT ae_term FROM ae ORDER BY ae_term"
+    )
+
+@st.cache_data
+def load_organs():
+    return run_query(
+        "SELECT DISTINCT organ_system FROM ae ORDER BY organ_system"
+    )
+
+@st.cache_data
+def load_groups():
+    return run_query(
+        "SELECT DISTINCT group_id FROM ae ORDER BY group_id"
+    )
+
+terms = load_terms()
+organs = load_organs()
+groups = load_groups()
 
 # ======================================================
 # SIDEBAR FILTERS
@@ -46,16 +75,16 @@ organ_filter = st.sidebar.multiselect(
 
 group_filter = st.sidebar.multiselect(
     "AE Group",
-    groups["group_id"].tolist()
+    groups["group_id"].dropna().tolist()
 )
 
 term_filter = st.sidebar.multiselect(
     "AE Term",
-    terms["ae_term"].tolist()
+    terms["ae_term"].dropna().tolist()
 )
 
 # ======================================================
-# BUILD WHERE CLAUSE
+# BUILD SQL WHERE CLAUSE
 # ======================================================
 conditions = []
 params = []
@@ -82,16 +111,16 @@ if conditions:
     where_clause = "WHERE " + " AND ".join(conditions)
 
 # ======================================================
-# MAIN TITLE
+# TITLE
 # ======================================================
 st.title("Clinical Trial Adverse Events Dashboard")
 
 # ======================================================
-# AE TABLE BY STUDY
+# MAIN TABLE
 # ======================================================
 st.header("AEs by Study")
 
-query = f"""
+main_query = f"""
 SELECT
     nct_id,
     group_id,
@@ -106,73 +135,17 @@ ORDER BY nct_id
 LIMIT 1000
 """
 
-ae_df = run_query(query, params)
+with st.spinner("Loading data..."):
+    ae_df = run_query(main_query, params)
 
 st.dataframe(ae_df, use_container_width=True)
 
 # ======================================================
-# TOP AEs BY FREQUENCY
+# METRICS SUMMARY
 # ======================================================
-st.header("Top AEs by Frequency")
+st.subheader("Summary Metrics")
 
-freq_query = f"""
-SELECT
-    ae_term,
-    SUM(num_affected) AS total_affected
-FROM ae
-{where_clause}
-GROUP BY ae_term
-ORDER BY total_affected DESC
-LIMIT 15
-"""
+col1, col2, col3 = st.columns(3)
 
-freq_df = run_query(freq_query, params)
-
-st.bar_chart(freq_df.set_index("ae_term"))
-
-# ======================================================
-# DEADLIEST AEs
-# ======================================================
-st.header("Top AEs by Deadliness")
-
-dead_query = f"""
-SELECT
-    ae_term,
-    SUM(num_affected)*1.0 / SUM(num_at_risk) AS death_rate
-FROM ae
-{where_clause}
-GROUP BY ae_term
-HAVING SUM(num_at_risk) > 0
-ORDER BY death_rate DESC
-LIMIT 15
-"""
-
-dead_df = run_query(dead_query, params)
-
-st.bar_chart(dead_df.set_index("ae_term"))
-
-# ======================================================
-# TOP ORGAN SYSTEMS
-# ======================================================
-st.header("Top Organ Systems")
-
-organ_query = f"""
-SELECT
-    organ_system,
-    SUM(num_affected) AS affected
-FROM ae
-{where_clause}
-GROUP BY organ_system
-ORDER BY affected DESC
-LIMIT 15
-"""
-
-organ_df = run_query(organ_query, params)
-
-st.bar_chart(organ_df.set_index("organ_system"))
-
-# ======================================================
-# FOOTER
-# ======================================================
-st.markdown("---")
-st.caption("Interactive AE dashboard built from ETL pipeline")
+col1.metric("Total Affected", int(ae_df["num_affected"].sum()))
+c
