@@ -38,8 +38,14 @@ def get_connection():
 
 @st.cache_data
 def run_query(query, params=None):
-    conn = get_connection()
-    return pd.read_sql(query, conn, params=params)
+    # Use a context manager to ensure the connection closes safely
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            df = pd.read_sql(query, conn, params=params)
+        return df
+    except sqlite3.DatabaseError as e:
+        st.error(f"SQLite Error: {e}")
+        return pd.DataFrame()
 
 # ======================================================
 # LOAD FILTER DATA (CACHED)
