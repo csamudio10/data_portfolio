@@ -42,16 +42,19 @@ else:
 def get_connection():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
+
 @st.cache_data
 def run_query(query, params=None):
-    # Use a context manager to ensure the connection closes safely
+    # The 'mode=ro' tells SQLite to open the file as Read-Only
+    # The 'nolock=1' ignores filesystem locking issues common in cloud containers
+    uri = f"file:{DB_PATH}?mode=ro&nolock=1"
+    
+    conn = sqlite3.connect(uri, uri=True)
     try:
-        with sqlite3.connect(DB_PATH) as conn:
-            df = pd.read_sql(query, conn, params=params)
-        return df
-    except sqlite3.DatabaseError as e:
-        st.error(f"SQLite Error: {e}")
-        return pd.DataFrame()
+        df = pd.read_sql(query, conn, params=params)
+    finally:
+        conn.close()
+    return df
 
 # ======================================================
 # LOAD FILTER DATA (CACHED)
