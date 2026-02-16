@@ -1,4 +1,4 @@
-pandas
-matplotlib
 streamlit>=1.32
-altair>=5
+altair<5
+pandas
+numpy
