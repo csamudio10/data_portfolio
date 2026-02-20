@@ -34,10 +34,13 @@ def run_query(query, params=None):
 # ======================================================
 # REUSABLE CHARTING COMPONENT
 # ======================================================
-def render_ae_visualization_suite(data, context_name):
-    """Renders the three standard charts for any data subset."""
+def render_ae_visualization_suite(data, context_name, height=450):
+    """
+    Renders the three standard charts for any data subset.
+    Default height increased to 450 to accommodate long AE names.
+    """
     st.subheader(f"📊 {context_name} Visualizations")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.5, 1.5, 1]) # Adjusted column ratios for wider labels
     
     if data.empty:
         st.warning(f"No data available for {context_name}")
@@ -48,9 +51,10 @@ def render_ae_visualization_suite(data, context_name):
         freq_df = data.groupby("ae_term")["num_affected"].sum().nlargest(10).reset_index()
         chart = alt.Chart(freq_df).mark_bar().encode(
             x=alt.X("num_affected:Q", title="Total Affected"),
-            y=alt.Y("ae_term:N", sort="-x", title=None),
-            color=alt.value("#4C78A8")
-        ).properties(height=250)
+            y=alt.Y("ae_term:N", sort="-x", title=None, axis=alt.Axis(labelLimit=300)), # Limit label truncation
+            color=alt.value("#4C78A8"),
+            tooltip=["ae_term", "num_affected"]
+        ).properties(height=height) # Increased Height
         st.altair_chart(chart, use_container_width=True)
 
     with col2:
@@ -59,9 +63,10 @@ def render_ae_visualization_suite(data, context_name):
         if not deadly_df.empty:
             chart = alt.Chart(deadly_df).mark_bar().encode(
                 x=alt.X("num_affected:Q", title="Serious Cases"),
-                y=alt.Y("ae_term:N", sort="-x", title=None),
-                color=alt.value("#E15759")
-            ).properties(height=250)
+                y=alt.Y("ae_term:N", sort="-x", title=None, axis=alt.Axis(labelLimit=300)),
+                color=alt.value("#E15759"),
+                tooltip=["ae_term", "num_affected"]
+            ).properties(height=height) # Increased Height
             st.altair_chart(chart, use_container_width=True)
         else:
             st.info("No serious AEs reported.")
@@ -70,10 +75,11 @@ def render_ae_visualization_suite(data, context_name):
         st.write("**SAE vs NSAE Distribution**")
         dist_df = data.groupby("serious")["num_affected"].sum().reset_index()
         dist_df["label"] = dist_df["serious"].map({1: "Serious", 0: "Non-Serious"})
-        chart = alt.Chart(dist_df).mark_arc(innerRadius=50).encode(
+        chart = alt.Chart(dist_df).mark_arc(innerRadius=70, outerRadius=120).encode(
             theta="num_affected:Q",
-            color=alt.Color("label:N", scale=alt.Scale(range=["#E15759", "#76B7B2"]), title=None)
-        ).properties(height=250)
+            color=alt.Color("label:N", scale=alt.Scale(range=["#E15759", "#76B7B2"]), title=None),
+            tooltip=["label", "num_affected"]
+        ).properties(height=height) # Matched Height
         st.altair_chart(chart, use_container_width=True)
 
 # ======================================================
@@ -87,7 +93,8 @@ st.header("🌎 1. General Level Analysis")
 with st.spinner("Loading global statistics..."):
     global_df = run_query("SELECT ae_term, serious, num_affected FROM aes")
 if not global_df.empty:
-    render_ae_visualization_suite(global_df, "Global")
+    # Explicitly using a larger height (500) for the General section
+    render_ae_visualization_suite(global_df, "Global", height=500)
 
 st.divider()
 
@@ -109,7 +116,7 @@ if selected_nct:
     study_data = run_query(study_query, (selected_nct,))
     
     if not study_data.empty:
-        render_ae_visualization_suite(study_data, f"Study {selected_nct}")
+        render_ae_visualization_suite(study_data, f"Study {selected_nct}", height=400)
         st.divider()
 
         # 3. GROUP WIDE VISUALIZATIONS
@@ -120,10 +127,10 @@ if selected_nct:
         
         if selected_group:
             group_data = study_data[study_data["group_title"] == selected_group]
-            render_ae_visualization_suite(group_data, f"Group: {selected_group}")
+            render_ae_visualization_suite(group_data, f"Group: {selected_group}", height=400)
             st.divider()
 
-            # 4. INDIVIDUAL AE METRICS (Row 3 Search)
+            # 4. INDIVIDUAL AE METRICS
             # ------------------------------------------------------
             st.header("🔬 4. Individual AE Comparison")
             unique_aes = sorted(study_data["ae_term"].unique().tolist())
@@ -133,7 +140,6 @@ if selected_nct:
                 ae_study_subset = study_data[study_data["ae_term"] == selected_ae]
                 ae_group_subset = ae_study_subset[ae_study_subset["group_title"] == selected_group]
 
-                # Metric Logic
                 def calc_rate(df):
                     aff = df["num_affected"].sum()
                     risk = df["num_at_risk"].sum()
@@ -150,7 +156,6 @@ if selected_nct:
                           delta_color="inverse")
                 m3.metric(f"Total Affected ({selected_group})", int(g_aff))
 
-                # Chart for AE Comparison
                 comp_data = pd.DataFrame({
                     "Category": ["Entire Study", f"Group: {selected_group}"],
                     "Incidence (%)": [s_rate, g_rate]
@@ -160,5 +165,5 @@ if selected_nct:
                     x=alt.X("Category:N", axis=alt.Axis(labelAngle=0)),
                     y=alt.Y("Incidence (%):Q", title="Incidence Rate (%)"),
                     color=alt.Color("Category:N", scale=alt.Scale(range=["#4C78A8", "#F58518"]))
-                ).properties(height=300)
+                ).properties(height=350)
                 st.altair_chart(comp_chart, use_container_width=True)
