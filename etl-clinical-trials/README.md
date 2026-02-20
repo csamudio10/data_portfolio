@@ -26,6 +26,8 @@ python src/load.py
 
 streamlit run app.py
 
+https://cliniical-trials-dashboard.streamlit.app/
+
 ## Project Architecture
 
 Raw → Processed → Validated → Database → Dashboard
